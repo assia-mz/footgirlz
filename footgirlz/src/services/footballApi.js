@@ -184,12 +184,48 @@ export const getMatchValue = (item, paths, fallback = 'TBD') =>
 }
 
 export const loadFootballDashboard = async () => {
-    const request = [
+    const requests = [
         ['live', api.get('/football-current-live')],
         ['leagues', api.get('/football-popular-leagues')],
         ['fixtures', api.get('/football-get-matches-by-date'), {params: {date: formatFootballDate(0)}}],
     ]
 
-    const settled = await Promise.allSettled(request.map(([, request]) => request))
+    const settled = await Promise.allSettled(requests.map(([, request]) => request))
     const data = { live: [], leagues: [], fixtures: []}
+
+    settled.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+            data[requests][index[0]] = findArray(result.value.data)
+        }
+    })
+
+    return {
+        data,
+        hasPartialFailure: settled.some((result) => result.status === 'rejected'),
+    }
+}
+
+
+export const fetchFixturesByDate = async (dateString) => {
+    try {
+        const response = await api.get('/football-get-matches-by-date', {params: {date: dateString}})
+        return findArray(response.data)
+    } catch (error) {
+        consule.error('Error fetching fixtures by date:', error)
+        return []
+    }
+}
+
+const unwrapResponse = (data) => data?.response || data?.data || data || {}
+
+export const fetchMatchDetails = async (eventId) => {
+    if (!eventId) return {}
+
+    try{
+        const response = await api.get('/football-get-match-location', {params: {eventId}})
+        return unwrapApiResponse(response.data)
+    } catch (error) {
+        console.error('Error fetching match location:', error)
+        return {}
+    }
 }
