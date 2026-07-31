@@ -32,5 +32,59 @@ function MatchRow({ match, featured = false }) {
     const awayLogo = getTeamLogo(match, 'away');
     const match date = getMatchValue(match, ['date', 'matchDate', 'fixture.date'], 'Upcoming');
 
-    return 
+    return (
+        <div className={featured ? s.matchRowFeatured : s.matchRowDefault}>
+            {!featured && (
+                <div className={s.matchDate}>
+                    {matchDate}
+                </div>
+            )}
+            <div className='flex items-center justify-between gap-2'>
+                   <div className={s.teamColumn}>
+                        <RealTeambadge logo={homeLogo} name={home} featured={featured} />
+                        <span className={`${s.teamNameBase} ${featured ? s.teamNameFeatured : s.teamNameDefault}`}>
+                            {home}
+                        </span>
+                   </div>
+                   <span className={`${s.vsBase} ${featured ? s.vsFeatured : s.vsDefault}`}>
+                       VS
+                    </span>
+                   <div className={s.teamColumn}>
+                       <RealTeambadge logo={awayLogo} name={away} featured={featured} />
+                        <span className={`${s.teamNameBase} ${featured ? s.teamNameFeatured : s.teamNameDefault}`}>
+                            {away}
+                        </span>
+                   </div>
+                   {!featured && (
+                        <button className={s.watchButton}>
+                            <ArrowRightIcon size={14} />
+                        </button>
+                   )}
+            </div>
+        </div>
+    );
 }
+
+
+export default function Hero({ matches = [], loading }) {
+    const displayMatches = matches.length ? matches.slice(0, 3) : [];
+
+    return (
+        <section id="top" className={s.heroSection}>
+            <div className={s.innerBg}>
+                <video
+                    aria-hidden="true"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={s.heroVideo}
+                >
+                    <source src={HERO_VIDEO_URL} type="video/mp4" />
+                </video>
+                <div className={s.overlayGradient}/>
+                <div className={s.gridContainer}>
+                    <aside className={s.statsAside}>
+            </div>
+        </section>
+    );
